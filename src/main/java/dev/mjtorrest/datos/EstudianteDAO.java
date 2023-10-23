@@ -2,11 +2,9 @@ package dev.mjtorrest.datos;
 
 import dev.mjtorrest.dominio.Estudiante;
 
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,29 +98,51 @@ public class EstudianteDAO {
         return false;
     }
 
-    // MAIN DE PRUEBA DE LISTAR ESTUDIANTES
-    public static void main(String[] args) {
-        var estudianteDao = new EstudianteDAO();
-        // AGREGAR ESTUDIANTE
-        var nuevoEstudiante = new Estudiante("Carlos", "Lara", "5684236952", "carlos@mail.com");
-        var agregar = estudianteDao.agregarEstudiante(nuevoEstudiante);
-        if(agregar)
-            System.out.println("Estudiante agregado: " + nuevoEstudiante);
-        else
-            System.out.println("No se agrego el estudiante:" + nuevoEstudiante);
+    public boolean modificarEstudiante(Estudiante estudiante){
+        PreparedStatement ps;
+        Connection con = getConexion();
+        String sql = "UPDATE estudiante SET nombre=?, apellido=?, telefono=?, email=? WHERE id_estudiante=?";
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, estudiante.getNombre());
+            ps.setString(2, estudiante.getApellido());
+            ps.setString(3, estudiante.getTelefono());
+            ps.setString(4, estudiante.getEmail());
+            ps.setInt(5, estudiante.getIdEstudiante());
+            ps.execute();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error al modificar estudiante: " + e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Ocurrio un error al cerrar conexion " + e.getMessage());
+            }
+        }
+        return false;
+    }
 
-        // LISTAR ESTUDIANTE
-        System.out.println("Listar Estudiantes");
-        List<Estudiante> estudiantes = estudianteDao.listarEstudiantes();
-        estudiantes.forEach(System.out::println);
-
-        // BUSCAR POR ID
-        //var estudiante1 = new Estudiante(3);
-        //System.out.println("Estudiante antes de la busqueda: " + estudiante1);
-        //var encontrado = estudianteDao.buscarEstudiantePorId(estudiante1);
-        //if(encontrado)
-            //System.out.println("Estudiante encontrado: " + estudiante1);
-        //else
-            //System.out.println("No se encontro estudiante: " + estudiante1.getIdEstudiante());
+    public boolean eliminarEstudiante(Estudiante estudiante){
+        PreparedStatement ps;
+        Connection con =getConexion();
+        String sql = "DELETE FROM estudiante WHERE id_estudiante=?";
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, estudiante.getIdEstudiante());
+            ps.execute();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error al eliminar estudiante: " + e.getMessage());
+        }
+        finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("Ocurrio un error al cerrar conexion " + e.getMessage());
+            }
+        }
+        return false;
     }
 }
