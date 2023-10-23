@@ -20,14 +20,4 @@ public class Conexion {
         }
         return conexion;
     }
-
-    // MAIN PARA PUEBA DE CONEXION
-
-    public static void main(String[] args) {
-        var conexion = Conexion.getConexion();
-        if(conexion != null)
-            System.out.println("Conexion Exitosa " + conexion);
-         else
-            System.out.println("Error en la Conexion");
-    }
 }
